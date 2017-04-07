@@ -1,0 +1,5 @@
+#!/bin/bash
+source $(dirname $0)/../environment.sh
+ln -s /dev/stdin $$
+java -Xmx4g weka.core.converters.JSONSaver -i $$
+rm $$

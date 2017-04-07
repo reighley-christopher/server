@@ -1,0 +1,8 @@
+#!/usr/bin/ruby
+require('yajl')
+
+parser = Yajl::Parser.new
+array = parser.parse(STDIN)
+array.each do |item|
+  Yajl::Encoder.encode(item, STDOUT)
+end

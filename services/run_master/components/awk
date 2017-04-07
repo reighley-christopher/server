@@ -1,0 +1,9 @@
+#!/bin/sh
+#META {
+#META "type":"script",
+#META "input":"stdio text/tab-separated-values",
+#META "output":"stdio",
+#META "parameters":["script"],
+#META "template":"<div><span>AWK SCRIPT</span><br><textarea name=\"script\" ><%=script%></textarea></div>"
+#META }
+awk "$1"

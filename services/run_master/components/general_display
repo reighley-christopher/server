@@ -1,0 +1,7 @@
+#!/bin/sh
+#META {
+#META "type":"script",
+#META "input":"stdio application/json",
+#META "output":"amqp"
+#META }
+awk $1

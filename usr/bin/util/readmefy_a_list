@@ -1,0 +1,5 @@
+#!/usr/bin/env bundle exec ruby
+require('repo_analyzer')
+
+data = JSON.parse(STDIN.read)
+STDOUT.write(data["content"])

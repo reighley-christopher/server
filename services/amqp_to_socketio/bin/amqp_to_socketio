@@ -1,0 +1,24 @@
+#! /usr/local/bin/node
+
+fs = require('fs');
+var pidFile = '/var/run/amqp_to_socketio.pid';
+fs.exists(pidFile, function(exists) {
+  if(exists)
+    {
+      console.log("pid file already exists");
+      process.exit(-1);
+    } else {
+      fs.writeFileSync(pidFile, process.pid.toString());
+      require('amqp_to_socketio');
+    }
+});
+
+function stop()
+  {
+  fs.unlink(pidFile); 
+  process.exit();
+  }
+
+process.on('SIGTERM', stop);
+process.on('SIGINT', stop);
+

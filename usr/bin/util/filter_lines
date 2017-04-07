@@ -1,0 +1,2 @@
+awk -v freq=$1 '/./ {if(rand(0) < freq) {print $0} }'
+

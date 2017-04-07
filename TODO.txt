@@ -1,0 +1,4 @@
+get badzork to work in /etc/init.d
+fix the filenames in /etc/init.d/run_master
+fix the filenames in /etc/init.d/amqp_to_socketio
+consolidate reighley-core.js and crutils.js in www/static

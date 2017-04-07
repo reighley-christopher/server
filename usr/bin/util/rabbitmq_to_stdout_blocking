@@ -1,0 +1,32 @@
+#!/usr/bin/python -u
+
+# Simpler implementation, broken
+# pika.BlockingConnection would be fine for this, since I am processing one message at a time and doing only that.
+# pika.BlockingConnection suffers from a known bug under heavy load.
+
+import pika
+import sys
+import logging
+
+QUEUE = sys.argv[1]
+logging.getLogger('pika.adapters.blocking_connection').addHandler(logging.StreamHandler(sys.stderr))
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel = connection.channel()
+try :
+  channel.queue_declare(queue=QUEUE, passive=True)
+except : 
+  channel = connection.channel()
+  channel.queue_declare(queue=QUEUE, auto_delete=True)
+
+channel.basic_qos(prefetch_count=10)
+
+def callback(ch, method, properties, body):
+    sys.stdout.write("%s\n"%body)
+    channel.basic_ack(delivery_tag=method.delivery_tag)
+
+channel.basic_consume(callback,
+                      queue=QUEUE)
+
+channel.start_consuming()
+

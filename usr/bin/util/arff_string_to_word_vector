@@ -1,0 +1,4 @@
+#!/bin/bash
+source $(dirname $0)/../environment.sh
+java -Xmx4g weka.filters.unsupervised.attribute.StringToWordVector
+

@@ -1,0 +1,11 @@
+There is nothing to do here.
+This room is empty.
+I can't do that.
+It's too dark.
+You try, but fail.
+Try using ^] to kill yourself.
+Perhaps you wanted to play Okay Zork, this is Bad Zork.
+I don't know how to do that.
+I don't know what that is.
+Language understand hard can't.
+You aren't making sense.

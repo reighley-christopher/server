@@ -1,0 +1,19 @@
+<table>
+    <% for(row in rows){ %>
+  <tr class="row  <%=(row%2==1?"tint":"")%> <%= (rows[row].points?"":"unpointed" ) %>  <%= (rows[row].done?"done":"") %>" data=<%= row%>>
+      <td class="darker"><span data=<%= row%> class="up">&#x25b2;</span></td>
+      <td class="darker">
+      <%= row %>
+      </td>
+      <td>
+      <%= rows[row].text.replace(/\n/g, "<br/>") %>
+      </td>
+  </tr>
+    <% }; %>
+  <tr>
+      <td colspan=3 class="darker">
+          <br>
+          <span class="add">ADD</span>
+      </td>
+  </tr>
+</table>

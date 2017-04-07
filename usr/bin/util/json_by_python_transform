@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+import sys
+import os
+import json
+sys.path.append(os.path.dirname(sys.argv[0]) + '/../lib/python/json_stream')
+from json_stream import JsonStream
+
+SCRIPT = sys.argv[1]
+
+stream = JsonStream()
+r = sys.stdin.read(100)
+built = None
+
+def build(script, prototype):
+    string = "class Build():\n\tdef e(self, " + ",".join(prototype.keys()) + "):\n\t\treturn " + script + "\n\n"
+    exec string
+    return Build()
+
+while(r):
+    stream.write(r)
+    val = stream.read()
+    while(val):
+        try:
+            if( not built ):
+                built = build(SCRIPT, json.loads(val))
+            json.dump( built.e( **(json.loads(val)) ), sys.stdout )
+            sys.stdout.write("\n")
+        except Exception as e:
+            sys.stderr.write("cound not parse\n")
+            sys.stderr.write(val)
+            sys.stderr.write(e.args)
+        val = stream.read()
+    r = sys.stdin.read(100)
+
+

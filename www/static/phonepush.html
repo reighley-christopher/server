@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <title>Phone Push</title>
+    <script src="jquery.js"></script>
+  </head>
+  <body style="margin: 0px; background: red" >
+    <canvas id="draw" style="background:white"></canvas>
+    <div id="camera" style="height:100px;width:100%;background:blue"><span>C</span></div>
+  </body>
+  <script>
+    function mobile_event(h)
+      {
+      return function(e) {
+        e.preventDefault();
+        var t = e.originalEvent.touches[0];
+        return h(t);
+        }
+      }
+    $(function() {
+      var c = $("#camera");
+      c.on("touchstart", function(e) {
+        navigator.webkitGetUserMedia({video: true, audio: true}, function(stream){alert("input")}, function(err){});
+      });
+      var d = $("#draw");
+      var cnv = d[0];
+      var ratio = 10;
+      cnv.height = ($(document).height()-100)/ratio;
+      cnv.width = $(document).width()/ratio;
+      cnv.style.height = ($(document).height()-100)+"px";
+      cnv.style.width = $(document).width()+"px";
+      var lastx, lasty;
+      var ctx = cnv.getContext("2d");
+    //  var i = ctx.createImageData(100, 100);
+    //  for(j = 0; j < 1000; j+=4) { i.data[j+0] = 255; i.data[j+3] = 255;  };
+    //  ctx.putImageData(i,10,10);
+    //  for(j = 1000; j < 2000; j+=4) { i.data[j+1] = 255; i.data[j+3] = 255; };
+    //  ctx.putImageData(i,10,10);
+      ctx.strokeStyle="rgba(0,128,255,0.6)";
+      d.on("touchstart", mobile_event(function(e) {lastx = e.pageX/ratio; lasty=e.pageY/ratio;}));
+      d.on("touchmove", mobile_event(function(e){
+        //alert(JSON.stringify({x: e.radiusX}));
+        if(e.radiusX > 0) {ctx.lineWidth = e.radiusX; ctx.strokeStyle="rgba(255,255,"+255*e.force+ "," +e.force+ ")"}
+        ctx.beginPath();
+        ctx.moveTo(lastx, lasty);
+        lastx=e.pageX/ratio; lasty=e.pageY/ratio;
+        ctx.lineTo(lastx, lasty);
+        ctx.stroke();
+        if(e.radiusX > 0) {ctx.lineWidth = 1; ctx.strokeStyle="rgba(0,128,255,0.6)"}
+      }));
+    });
+  </script>
+</html>

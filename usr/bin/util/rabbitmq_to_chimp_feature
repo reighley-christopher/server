@@ -1,0 +1,106 @@
+#!/usr/bin/ruby -I/nfs/export/UTIL/lib/ruby/data_chimp/lib
+require('json')
+require('amqp')
+require('data_chimp')
+#require('fiber')
+
+DataChimp.path = ARGV[0]+"/*"
+INQUEUE = ARGV[1]
+OUTQUEUE = ARGV[2]
+
+ExplanatoryVariable.lookup("sum") #TODO known bug should seed the catalog without this call.
+#p Loader.constants
+
+
+#class ProcessFiber
+#  def initialize(process)
+#    @end = false
+#    @process = process
+#    @buffer = []
+#    process.enumerable = self
+#    @fiber = Fiber.new do
+#      process.perform
+#    end
+#  end
+
+#  def start()
+#    @fiber.resume
+#  end
+#
+#  def stop()
+#    @end = true
+#    while(@fiber.alive?)
+#      @fiber.resume
+#    end
+#  end
+#
+#  def push(item)
+#    @buffer.push(item)
+#    @fiber.resume
+#  end
+#
+#  def each
+#    until @end
+#      while @buffer.empty? && !@end
+#        Fiber.yield
+#      end
+#      yield @buffer.shift() until @buffer.empty?
+#    end
+#  end
+#end
+
+
+EventMachine.run do || 
+  connection = AMQP.connect(host: '127.0.0.1')
+  channel = AMQP::Channel.new(connection)
+  channel.prefetch(10)
+  in_queue = channel.queue(INQUEUE, passive: true)
+  out_queue = channel.queue(OUTQUEUE, auto_delete: true)
+
+  
+#  process = eval(File.read(PROCESS))
+#  
+#
+#  writer = Object.new
+#  class << writer
+#    def write(data)
+#      STDOUT.write(data)
+#      STDOUT.flush
+#    end
+#  end
+#
+#  process.output_writer = writer
+#  
+#
+#  fiber = ProcessFiber.new(process)
+
+  def terminate()
+    EventMachine.stop()
+  end
+
+  Signal.trap("TERM") do
+    terminate()
+  end
+
+  Signal.trap("INT") do
+    terminate()
+   end
+
+  in_queue.subscribe ack: true do |metadata, payload|
+    begin
+      obj = JSON.parse(payload)
+      ExplanatoryVariable.catalog.values.each do |var|
+        unless obj.has_key?(var.name.to_s) then
+          obj[var.name.to_s] = var.evaluate( obj )
+        end
+      end
+      payload = obj.to_json
+    rescue Exception => e
+    end
+    out_queue.publish(payload)
+    metadata.ack
+  #  STDOUT.write(payload)
+  #  STDOUT.flush()
+  end
+#  fiber.start()
+end

@@ -1,0 +1,22 @@
+<table class="fullscreen">
+    <tr>
+        <td>
+<textarea name="text" class="update" type="textarea"><%= self.data[self.current].text %></textarea>
+        </td>
+    </tr>
+    <tr class="tint squeeze">
+        <td>
+POINTS
+<input type="text" name="points" class="update smallint" value="<%= self.data[self.current].points %>"></input>
+<input type="checkbox" class="update" <%= self.data[self.current].done?"checked":""%> onclick="x=$('[name=done]'); x.val(Date()); x.blur();" ></input>
+DONE
+<input class="update" type="hidden" name="done" value="<%= self.data[self.current].done %>"></input>
+        </td>
+    </tr>
+    <tr class="squeeze">
+        <td class="darker">
+            <br>
+            <span class="back">BACK</span>
+        </td>
+    </tr>
+</table>

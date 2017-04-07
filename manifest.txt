@@ -1,0 +1,18 @@
+Services:
+HTTP at /www : 80
+riak : 809
+rabbitmq : 9000
+socket.io : 9001
+run_master : 9002
+badzork : 2000
+
+Files:
+
+/etc/nginx/nginx.conf
+  Nginx configuration file.
+
+/etc/rc.d/init.d/amqp_to_socketio
+  socket.io server
+
+/etc/rc.d/init.d/run_master
+  run master server

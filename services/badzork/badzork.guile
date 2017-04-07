@@ -1,0 +1,49 @@
+#!/usr/bin/guile -s
+!#
+
+(use-modules (ice-9 popen))
+
+(define flush-pipe (lambda (in out)
+  (let 
+  ((c (read-char in)))
+  (if (not (eof-object? c)) (write-char c out))
+  (if (not (eof-object? c)) (flush-pipe in out))
+)))
+
+(
+with-input-from-file "title.txt" (lambda () (flush-pipe (current-input-port) (current-output-port) ))
+
+)
+(display "You are in an empty room.\n")
+
+(define output (open-file "stub.out" "a"))
+(define input (open-input-pipe "./replies.sh"))
+
+(define main-loop (lambda ()
+  (display ">" )
+  (force-output (current-output-port))
+  (letrec 
+    ((inner-loop (lambda (c)
+      (write-char c output)
+      (if (not (equal? c #\newline )) 
+        (inner-loop  (read-char (current-input-port)))
+      )
+    )))
+    (inner-loop  (read-char (current-input-port)))
+  )
+  (letrec
+    ((inner-loop (lambda (c)
+      (let
+        ((d (read-char input)))
+        (write-char d (current-output-port))
+        (if (not (and (equal? c d) (equal? c #\newline)))
+          (inner-loop d )
+        )
+      ))))
+    (inner-loop #\newline)
+  )
+  (force-output output)
+  (main-loop)
+))
+
+(main-loop)

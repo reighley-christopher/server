@@ -1,0 +1,57 @@
+#!/usr/bin/ruby 
+require('json')
+require('amqp')
+require('curb')
+require('socket')
+
+#META {
+#META }
+
+TYPE = ARGV[0]
+INQUEUE = ARGV[1]
+OUTSOCKET = ARGV[2]
+
+EventMachine.run do || 
+  connection = AMQP.connect(host: '127.0.0.1')
+  channel = AMQP::Channel.new(connection)
+  channel.prefetch(10)
+  in_queue = channel.queue(INQUEUE, passive: true)
+  p "starting server #{in_queue} #{in_queue.name}"
+
+  def terminate()
+    EventMachine.stop()
+  end
+
+  Signal.trap("TERM") do
+    terminate()
+  end
+
+  Signal.trap("INT") do
+    terminate()
+   end
+
+  in_queue.subscribe ack: true do |metadata, url|
+    begin
+      p url
+      if TYPE == "UNIX"
+        socket = UNIXSocket.new(OUTSOCKET)
+      elsif TYPE == "TCP"
+        match = /([\w]*):([\d]*)/.match(OUTSOCKET)
+        socket = TCPSocket.new(match[1], match[2].to_i)
+      end
+      socket.send("testing", 0)
+      curl = Curl.get(url)
+      curl.on_body do |data|
+        socket.send(data, 0) 
+      end
+      curl.perform
+      metadata.ack
+    rescue Exception => e
+      $stderr.puts "#{e.message}"
+    ensure
+      if(socket) 
+        socket.close()
+      end
+    end
+  end
+end

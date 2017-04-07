@@ -1,0 +1,10 @@
+#!/bin/sh
+#META {
+#META "type":"script",
+#META "output":"stdio text/tab-separated-values",
+#META "parameters":["greet"],
+#META "template":"<div><span>GREET</span><input type=\"text\" name=\"greet\" value=\"<%=greet%>\"/></div>"
+#META }
+echo "hello"	$1
+echo "hi"	$1$1
+echo "error" 1>&2

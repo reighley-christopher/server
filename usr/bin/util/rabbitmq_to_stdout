@@ -1,0 +1,34 @@
+#!/usr/bin/python -u
+
+import pika
+import sys
+import logging
+import twisted.internet.defer
+import twisted.internet.reactor
+import twisted.internet.protocol
+import twisted.internet.task
+
+QUEUE = sys.argv[1]
+logging.getLogger('pika.adapters.twisted_connection').addHandler(logging.StreamHandler(sys.stderr))
+
+@twisted.internet.defer.inlineCallbacks
+def run(connection):
+  channel = yield connection.channel()
+  queue = yield channel.queue_declare(queue=QUEUE, passive=True)
+  yield channel.basic_qos(prefetch_count=10)
+  queue_object, consumer_tag = yield channel.basic_consume(queue=QUEUE)
+  l = twisted.internet.task.LoopingCall(callback, queue_object)
+  l.start(0.01)
+
+@twisted.internet.defer.inlineCallbacks
+def callback(queue):
+    channel, method, properties, body = yield queue.get()
+    sys.stdout.write("%s\n"%body)
+    yield channel.basic_ack(delivery_tag=method.delivery_tag)
+
+twisted.internet.protocol.ClientCreator(
+    twisted.internet.reactor, 
+    pika.adapters.twisted_connection.TwistedProtocolConnection, 
+    pika.ConnectionParameters()).connectTCP('localhost', 5672).addCallback(lambda protocol: protocol.ready).addCallback(run)
+twisted.internet.reactor.run()
+

@@ -1,0 +1,19 @@
+#!/usr/bin/python
+
+import tornado.web
+import tornado.ioloop
+import sys
+import os
+
+SOCKET_IN = sys.argv[1]
+
+class Handler(tornado.web.RequestHandler):
+    def post(self):
+        sys.stdout.write(self.request.body)
+        sys.stdout.flush()
+
+application = tornado.web.Application([(r"/", Handler)])
+application.listen(SOCKET_IN)
+tornado.ioloop.IOLoop.instance().start()
+        
+        

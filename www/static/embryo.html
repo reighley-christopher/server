@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <title>sphere</title>
+  </head>
+<body>
+  <script src='threejs/build/three.min.js'></script>
+  <script src='embryo.js'></script>
+  <script src='jquery.js'></script>
+  <script>
+  function Bucket(D) {
+      function wrapf(a) {return new THREE.BufferAttribute( new Float32Array (a), 3 ) };
+      function wrapi(a) {return new THREE.BufferAttribute( new Uint32Array (a), 1  ) };
+      function wrapc(a) {return new THREE.BufferAttribute( new Uint8Array (a), 3  , true) };
+      function wrapn(a) {return new THREE.BufferAttribute( new Int16Array (a), 3, true) };
+
+
+      this.scene = new THREE.Scene();
+      this.scene.add( new THREE.AmbientLight( 0x404040 ) );
+      this.dl = new THREE.DirectionalLight(0xffffff);
+      /*this.dl.position.set( 0, -70, 100 ).normalize();*/
+      this.scene.add(this.dl);
+      this.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      this.renderer = new THREE.WebGLRenderer();
+      this.renderer.setSize( window.innerWidth, window.innerHeight);
+      document.body.appendChild(this.renderer.domElement);
+      
+      /*TODO Materials*/ 
+      this.material = new THREE.MeshPhongMaterial( {
+         color: 0xffffff, 
+         specular: 0xffffff, 
+         shininess: 30, 
+         vertexColors: THREE.VertexColors, 
+         shading: THREE.SmoothShading 
+        });
+
+      this.geometry = new THREE.BufferGeometry();
+      this.geometry.addAttribute( 'position', wrapf(D.position)  );
+      this.geometry.addAttribute( 'index', wrapi(D.index) );
+      this.geometry.addAttribute( 'color', wrapc(D.color) );
+      this.geometry.addAttribute( 'normal', wrapn(D.normal) ); 
+
+      this.cell = new THREE.Mesh( this.geometry, this.material );
+      this.scene.add( this.cell );
+      this.camera.position.z = 5;
+      this.render = function() {
+        this.renderer.render(this.scene, this.camera);
+        }
+     }
+  var bucket;
+  $.get("/static/embryo.json").done(function(d){
+  bucket = new Bucket(JSON.parse(d));
+  bucket.render();
+  });
+  function go() {
+    requestAnimationFrame(go);
+    bucket.cell.rotation.y += 0.025;
+    bucket.render();
+  }
+  </script>
+</body>
+</html>

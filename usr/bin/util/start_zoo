@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "START ZOO";
+/nfs/export/UTIL/bin/rabbitmq_input_socketd Newline /socket/url url &
+/nfs/export/UTIL/bin/rabbitmq_input_socketd Newline /socket/bitbucket bitbucket &

@@ -1,0 +1,77 @@
+#!/usr/bin/python
+
+import pika
+import sys
+import os
+#from hanzo.warctools.warc import WarcParser
+
+sys.path.append(os.path.dirname(sys.argv[0]) + '/../lib/python/json_stream')
+print sys.path
+from json_stream import JsonStream
+
+from twisted.internet import reactor, protocol
+
+print sys.argv
+
+PARSER = sys.argv[1]
+SOCKET_PATH = sys.argv[2]
+QUEUE = sys.argv[3]
+
+#different kinds of parsers
+class OutputParser:
+    def send(self, message):
+        channel.basic_publish(exchange='', routing_key=QUEUE, body=message )
+
+class Newline(OutputParser):
+    def __init__(self):
+        self.current_message = ""
+    def consume(self, data):
+        split = data.split("\n")
+        split[0] = self.current_message + split[0]
+        for i in split[0 : len(split)-1]:
+            self.send(i.rstrip("\r"))
+        self.current_message = split[len(split)-1]
+
+class JSON(OutputParser):
+    def __init__(self):
+        self.stream = JsonStream()
+
+    #consume satisfies the OutputParser interface
+    def consume(self, data):
+        self.stream.write(data)
+        message = self.stream.read()
+        while(message != None):
+            print(message)
+            self.send(message)
+            message = self.stream.read()
+
+class WARC(OutputParser):
+    def __init__(self):
+        pass
+    def consume(self, data):
+        pass
+
+parser = eval(PARSER)()
+
+#rabbit MQ connection
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel = connection.channel()
+
+try :
+  channel.queue_declare(queue=QUEUE, passive=True)
+except :
+  channel = connection.channel()
+  channel.queue_declare(queue=QUEUE)
+
+class MessageOut(protocol.Protocol):
+    def dataReceived(self, data):
+        print data
+        parser.consume(data)
+
+class MessageOutFactory(protocol.Factory):
+    def buildProtocol(self, addr):
+        return MessageOut()
+
+reactor.listenUNIX(SOCKET_PATH, MessageOutFactory())
+reactor.run()
+
