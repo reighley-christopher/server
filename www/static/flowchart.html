@@ -62,7 +62,7 @@
     <g id="main" transform="scale(20)">
     </g>
     <g id="main_menu" transform="translate(10, 10) scale(20)" >
-      <polygon points="0,0 3,0 3,8 0,8" stroke-width="0.1" style="fill: white"/>
+      <polygon points="0,0 3,0 3,10.5 0,10.5" stroke-width="0.1" style="fill: white"/>
       <use id="InputTriangle" xlink:href="#input_triangle" x="1" y="0.5" />
       <use id="ProcessRectangle" xlink:href="#process_rectangle" x="1" y="3.0" />
       <use id="OutputTriangle" xlink:href="#output_triangle" x="1" y="5.5"/>
@@ -132,11 +132,18 @@ function ERR(x)
       var process_name = location.search.replace("?", "");
       $.get("/riak/buckets/processes/keys/" + process_name, "json").done(function(a){
         container = new Container({data: a, el : $("div#container")});
+        $.get("/run/glyphs").done(function(a){
+          container.menu.append(a);            
+          });
         container.render();
         }).fail(function(a){
         container = new Container({data: {inputs:{}, outputs:{}, processes:{}, connect:[]}, el : $("div#container")});
+        $.get("/run/glyphs").done(function(a){
+          container.menu.append(a);            
+          });
         container.render(); 
         });
+
       }
 
     function save()

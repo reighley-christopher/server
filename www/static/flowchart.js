@@ -21,7 +21,7 @@
             this.aspecialX = (e.originalEvent.touches[0].pageX + 
                            e.originalEvent.touches[1].pageX)/2;
             this.aspecialY = (e.originalEvent.touches[0].pageY + 
-                           e.originalEvent.touches[1].pageY)/2;
+                           e.originalEvent.touches[1].pag/eY)/2;
             this.touch_el = null; /*one finger hit the screen first, but that doesn't make this a click*/
             } else {
             this.aspecialX = e.originalEvent.changedTouches[0].pageX;
@@ -224,21 +224,6 @@
          }
     });
 
-    InputTriangle = SVGBase.extend({
-      shape_def : "#input_triangle",
-      data_def : "inputs"
-    });
-
-    ProcessRectangle = SVGBase.extend({
-      shape_def : "#process_rectangle",
-      data_def : "processes"
-    });
-
-    OutputTriangle = SVGBase.extend({
-      shape_def : "#output_triangle",
-      data_def : "outputs"
-    });
-
     PipeLine = Backbone.View.extend({
       initialize : function(opts)
          {
@@ -257,7 +242,7 @@
          $(ret).append(path);
          return ret;
          },
-      setEnds : function(x, y)
+      setEnds : function(x, raw_y, output_right, output_y, input_left, input_y)
          {
          /*cases to be handled:
          the vertical difference is 0
@@ -266,16 +251,21 @@
          the right element is above the left element
          the horizontal distance is small
          */
+         var marker_size = 0.4;
+         var y = raw_y+input_y-output_y; 
          if( y == 0 ) 
            {
-           this.$("path").attr("d", "M 1.2 1 H "+ (x-0.6)).attr("marker-end", "url(#Triangle)");;
+           this.$("path").attr("d", "M " + output_right + " 1 H "+ (x + input_left - marker_size )).attr("marker-end", "url(#Triangle)");;
            } else if(Math.abs(y) > 1) {
            var turn1 = (y > 0) ? " a 0.4 0.4 0 0 1 0.4 0.4 " : " a 0.4 0.4 0 0 0 0.4 -0.4 " ;
            var turn2 = (y > 0) ? " a 0.4 0.4 0 0 0 0.4 0.4 " : " a 0.4 0.4 0 0 1 0.4 -0.4 " ;
            var vert = ( y > 0 ) ? y+0.6 : y+1.4;
-           this.$("path").attr("d", "M 1.2 1 H  " +x/2.0+ turn1 + "V "+vert+ turn2 + "H "+(x-0.6)).attr("marker-end", "url(#Triangle)");
+           this.$("path").attr("d", "M " + output_right + " " + output_y + " H " +x/2.0+ turn1 + "V "+vert+ turn2 + 
+                               "H "+(x + input_left - marker_size )).attr("marker-end", "url(#Triangle)");
            } else {
-           this.$("path").attr("d", "M 1.2 1 c "+ (x/2.0) +" 0 "+(x/2.0)+" "+ y +" "+(x-1.8)+" "+y).attr("marker-end", "url(#Triangle)");
+           this.$("path").attr("d", "M " + output_right + " " + output_y + 
+                              " c "+ (x/2.0) +" 0 "+(x/2.0)+" "+ y +" "+(x-marker_size - output_right - 0.2)+" "+y
+                              ).attr("marker-end", "url(#Triangle)");
            }
          },
       destroy : function()
@@ -285,8 +275,23 @@
         },
       render : function()
         {
+        var out_x = Number(this.from.$el.find("#out").attr("cx"));
+        var out_y = Number(this.from.$el.find("#out").attr("cy"));
+        var in_x = Number(this.to.$el.find("#in").attr("cx"));
+        var in_y = Number(this.to.$el.find("#in").attr("cy"));
+        var out_r = Number(this.from.$el.find("#out").attr("r"));
+        var in_r = Number(this.to.$el.find("#in").attr("r"));
+        var marker_size = 0.4;
         this.$el.attr("transform", "translate("+this.from.data.coordinates[0]+","+this.from.data.coordinates[1]+")");
-        this.setEnds(this.to.data.coordinates[0] - this.from.data.coordinates[0], this.to.data.coordinates[1] - this.from.data.coordinates[1]);
+         var input_left = in_x-in_r;
+         var output_right = out_x+out_r;
+         var input_y = in_y;
+         var output_y = out_y;
+ 
+        this.setEnds(this.to.data.coordinates[0] - this.from.data.coordinates[0], 
+                     this.to.data.coordinates[1] - this.from.data.coordinates[1],
+                     output_right, output_y, input_left, input_y
+                    );
         }
     });
     
@@ -301,27 +306,44 @@
        this.current_scale = 20;
        this.current_x = 0;
        this.current_y = 0;
+       this.factories = 
+          { 
+          InputTriangle : SVGBase.extend({
+           shape_def : "#input_triangle",
+           data_def : "inputs"
+          }),
+
+          ProcessRectangle : SVGBase.extend({
+            shape_def : "#process_rectangle",
+            data_def : "processes"
+          }),
+
+          OutputTriangle : SVGBase.extend({
+            shape_def : "#output_triangle",
+            data_def : "outputs"
+          })
+          } 
        },
     render : function(){
       var data = this.data;
       var svgdoc = this.$('svg #main');
       for(i in data.inputs)
         {
-        var t = new InputTriangle({id : i, data : data.inputs[i]});
+        var t = new this.factories["InputTriangle"]({id : i, data : data.inputs[i]});
         this.add(t);
         t.render();
         }
 
       for(i in data.outputs)
         {
-        var t = new OutputTriangle({id : i, data : data.outputs[i]});
+        var t = new this.factories["OutputTriangle"]({id : i, data : data.outputs[i]});
         this.add(t);
         t.render();
         }
       
       for(i in data.processes)
         {
-        var t = new ProcessRectangle({id : i, data : data.processes[i]});
+        var t = new this.factories["ProcessRectangle"]({id : i, data : data.processes[i]});
         this.add(t);
         t.render();
         }
@@ -346,14 +368,14 @@
     add : function( unit ){
       this.$('svg #main').append(unit.$el);
       this.index[unit.id] = unit;
-      unit.on("grab", function(){ this.moving = unit; console.log(this); }, this);
+      unit.on("grab", function(){ this.moving = unit; }, this);
       unit.on("start_join", function() { this.start_join = unit; this.link() }, this );
       unit.on("end_join", function() {this.end_join = unit; this.link() }, this );
       unit.on("edit", function(e){ this.moving = null; this.edit.open(e)}, this );
       unit.on("destroy", function(){ this.helper.remove_node(unit.id) }, this );
     },
     create : function( name, x, y){
-      var klass = eval(name);
+      var klass = this.factories[name];
       var data =  { coordinates : [Math.floor(x/20),  Math.floor(y/20)]};
       var id = this.newId();
       obj = new klass({id : id, data : data});
@@ -502,6 +524,33 @@
        {
        /*STUB*/
        ERR("POW");
+       },
+      append : function(svgdoc) 
+       {
+       var svg$ = $(svgdoc);
+       var children =  svg$.find('g');
+       var self = this;
+       children.each(function(c)
+         {
+         var fact_key = $(children[c]).attr("id");
+         var shape_def = "#" + fact_key;
+         container.factories[fact_key] = SVGBase.extend({
+           shape_def : shape_def,
+           data_def : "processes"
+         });
+
+
+         $('#c3d defs').append(children[c]);
+         var use = $(document.createElementNS("http://www.w3.org/2000/svg", "svg:use"));
+         use.attr("id", fact_key).
+             attr("href", shape_def).
+             attr("x", "1").
+             attr("y", 8.0+(c*2.5))
+         /*$('#c3d #main_menu').append(children[1]);*/
+         self.$el.append(use);
+         use.on("use").on("mouseup", self, self.select );
+         use.on("touchend", self, self.touch_select );
+         });
        }
     });
  

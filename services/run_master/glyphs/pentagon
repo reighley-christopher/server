@@ -1,0 +1,20 @@
+  <svg id="c3d" 
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   height="0" width="0"
+   >
+<defs>
+<g id="pentagon">
+  <polygon points="0,0 1,0 2,1 1,2 0,2" stroke-width="0.1" />
+  <circle id="in" cx="0" cy="0" r="0.2" stroke-width="0.1" />
+  <circle id="out" cx="2" cy="1" r="0.2" stroke-width="0.1" />
+</g>
+
+<g id="color_channel_r">
+  <circle id="in" cx="0.5" cy="0.5" r="0.5" stroke-width="0.1" style="fill:red" />
+  <circle id="out" cx="0.5" cy="0.5" r="0.5" stroke-width="0.1" style="fill:red" />
+</g>
+</defs>
+</svg> 
