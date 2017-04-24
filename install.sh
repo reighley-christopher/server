@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "install stub"
+cp services/run_master/src/pipefitter/pipefitter /nfs/export/UTIL/bin

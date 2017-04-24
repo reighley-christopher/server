@@ -1,0 +1,8 @@
+E 0 echo "hello world"
+E 1 test/test_exec
+E 2 test/test_exec
+E 3 test/test_exec
+P 0 1
+P 0 2 
+P 0 3 
+X

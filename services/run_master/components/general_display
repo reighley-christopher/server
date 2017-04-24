@@ -4,4 +4,4 @@
 #META "input":"stdio application/json",
 #META "output":"amqp"
 #META }
-awk $1
+bin/rabbitmq_input_simple $1 general_display
