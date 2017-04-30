@@ -16,7 +16,7 @@
 # Check that networking is up.
 [ "$NETWORKING" = "no" ] && exit 0
 
-exec="/nfs/export/UTIL/bin/run_master"
+exec="/srv/run_master/bin/run_master"
 
 start() {
     echo -n $"Starting $exec: "

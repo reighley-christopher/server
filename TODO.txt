@@ -1,4 +1,6 @@
 get badzork to work in /etc/init.d
-fix the filenames in /etc/init.d/run_master
-fix the filenames in /etc/init.d/amqp_to_socketio
 consolidate reighley-core.js and crutils.js in www/static
+make the node servers more compatible with npm :
+  we shouldn't need two installations of express and promise, just one at srv root
+  .js files need license information etc.
+  package.json files to ease installation.

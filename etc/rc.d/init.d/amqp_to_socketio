@@ -16,7 +16,7 @@
 # Check that networking is up.
 [ "$NETWORKING" = "no" ] && exit 0
 
-exec="/nfs/export/UTIL/bin/amqp_to_socketio"
+exec="/srv/amqp_to_socketio/bin/amqp_to_socketio"
 
 start() {
     echo -n $"Starting $exec: "
