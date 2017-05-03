@@ -1,0 +1,16 @@
+source 'http://rubygems.org'
+
+gem 'repo_analyzer', :path => "/nfs/export/UTIL/lib/ruby/repo_analyzer"
+gem 'data_chimp', :path => "/nfs/export/UTIL/lib/ruby/data_chimp"
+
+gem 'sqlite3'
+gem 'curb'
+gem 'json'
+gem 'mysql2'
+gem 'zip'
+gem 'mongo'
+gem 'bson_ext'
+gem 'yajl-ruby'
+gem 'amqp'
+gem 'ruby_parser'
+
