@@ -48,7 +48,7 @@
      }
   var bucket;
   $.get("/static/embryo.json").done(function(d){
-  bucket = new Bucket(JSON.parse(d));
+  bucket = new Bucket(d);
   bucket.render();
   });
   function go() {

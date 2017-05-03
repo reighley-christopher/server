@@ -4,3 +4,4 @@ make the node servers more compatible with npm :
   we shouldn't need two installations of express and promise, just one at srv root
   .js files need license information etc.
   package.json files to ease installation.
+Make embryo.html more robust to non-Json data (or a change to jquery)

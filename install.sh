@@ -3,21 +3,43 @@
 DIR=$PWD
 PATH=/usr/local/bin:$PATH
 
-#yum install erlang pygpgme yum-utils nginx
+#yum install pygpgme yum-utils nginx
 #cp etc/yum.repos.d/* /etc/yum.repos.d
 #yum -q makecache -y
-
-#yum install rabbitmq-server
+#yum install ncurses-devel
 
 #yum install riak --nogpgcheck
 
 #yum install gcc
+#yum install socat
+#yum install openssl-devel
 
 #mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.old
 #cp etc/nginx/nginx.conf /etc/nginx/nginx.conf
+#wget http://erlang.org/download/otp_src_19.3.tar.gz
+#gzip --decompress otp_src_19.3.tar.gz
+#tar -xf otp_src_19.3.tar
+#cd otp_src_19.3
+#./configure
+#make install
+#cd $DIR
+
+#wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.9/rabbitmq-server-generic-unix-3.6.9.tar.xz
+#xz --decompress rabbitmq-server-generic-unix-3.6.9.tar.xz
+#tar -xf rabbitmq-server-generic-unix-3.6.9.tar
+#cp -r rabbitmq_server-3.6.9/etc /usr/local
+#cp -r rabbitmq_server-3.6.9/sbin /usr/local
+#cp -r rabbitmq_server-3.6.9/share /usr/local
+
+#mkdir /usr/local/lib/rabbitmq
+#mkdir /usr/local/lib/rabbitmq/lib
+#cp -r rabbitmq_server-3.6.9 /usr/local/lib/rabbitmq/lib
 
 #cp -r www /www
 #cd /www/static
+#wget https://github.com/mrdoob/three.js/archive/master.zip
+#unzip master.zip
+#mv three.js-master threejs
 #wget https://code.jquery.com/jquery.js
 #wget http://underscorejs.org/underscore.js
 #wget http://backbonejs.org/backbone.js
