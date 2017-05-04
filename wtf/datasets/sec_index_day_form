@@ -1,0 +1,15 @@
+#!/bin/sh
+#META	{ 
+#META   "description":"index to SEC filings by day and form type",
+#META   "class":"input",
+#META   "output-path":{"stream":"stdout","format":"delimited-line-string"},
+#META	"output-type":"url",
+#META   "parameters":[
+#META      {"type":"date", "description":"date of snapshot", "format":"%Y%m%d"}, 
+#META      {"type":"string", "description":"form type"}
+#META      ]
+#META	}
+curl --silent ftp://ftp.sec.gov/edgar/daily-index/form.$1.idx | 
+awk 'BEGIN {FS="\t";MARK=0};/.*/{if(MARK){print $0}};/^\-*$/{MARK=-1};' | 
+egrep "^$2 " | 
+sed 's/^.*\(edgar.*\)/ftp:\/\/ftp\.sec\.gov\/\1/g'
